@@ -25,7 +25,7 @@
   import SearchHeader from './components/SearchHeader.vue';
   import Card from './components/Card.vue';
   import { data } from './composable/persons.js';
-  import { ref, computedg } from 'vue';
+  import { ref, computed } from 'vue';
 
   const isSideMenuOpen = ref(false);
 

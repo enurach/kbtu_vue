@@ -43,6 +43,7 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    align-items: center;
   }
 
   .white-box {
@@ -55,6 +56,7 @@
     color: black;
     border: 0;
     font-size: 2rem;
+    width: 80%;
   }
   
   .side-menu ul {
