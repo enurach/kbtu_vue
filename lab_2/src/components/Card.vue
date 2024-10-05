@@ -14,12 +14,17 @@
             <img :src= "imageSrc" />
         </div>
         <p class="comment">{{person.comment}}</p>
-        <button id="like">Like</button>
+        <button id="like" @click="likePerson(person.id)">Like</button>
     </div>
 </template>
 
 <script setup>
+    import { ref} from 'vue';
     const person = defineProps({
+        id: {
+            type: Number,
+            required: true
+        },
         name: {
             type: String,
             required: true
@@ -36,6 +41,13 @@
         },
 
     });
+
+    const emit = defineEmits(['likePerson']);
+
+    const likePerson = () => {
+        emit('likePerson', person.id);
+    };
+
 
     const imageSrc = new URL(`../assets/${person.photo}`, import.meta.url).href;
 

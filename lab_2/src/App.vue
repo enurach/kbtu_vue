@@ -3,15 +3,24 @@
     <div class = "main_content">
       <SideMenu v-if ="isSideMenuOpen" @toggleSideMenu="handleSideMenuToggle" @changeTopic="handleTopic"/>
       <main>
-        <SearchHeader :title="topic"/>
+        <SearchHeader
+          @nextPage="nextPage"
+          @prevPage="prevPage"
+          @changeFilter="handleFilter"
+          :title="topic"
+          :totalPages="totalPages"
+          :currentPage="currentPage"/>
         <div class="person-grid">
           <Card 
-            v-for="person in persons" 
+            v-for="person in paginatedPersons" 
+            :id="person.id"
             :name=person.PersonName
             :photo="person.Avatar"
             :date="person.PubDate"
             :comment="person.Commentary"
             :rating="person.Rating"
+
+            @likePerson="handleLike"
           />
         </div>
       </main>
@@ -30,7 +39,11 @@
   const isSideMenuOpen = ref(false);
 
   const topic = ref("Adventure");
-  const persons = ref();
+
+  const currentPage = ref(1);
+  const itemsPerPage = ref(4);
+  const data_ref = ref(data)
+  const currentSort = ref('Rating')
 
   const dict = {
     0: "Adventure",
@@ -39,21 +52,64 @@
     3: "Modern"
   };
 
-  const init = () => {
-    persons.value = data.filter((item) => item.Topic == topic.value);
-    console.log(persons.value)
+  const nextPage = () => {
+    if (currentPage.value < totalPages.value) {
+      currentPage.value++;
+      }
   };
+
+  const prevPage = () => {
+    if (currentPage.value > 1) {
+      currentPage.value--;
+      }
+  };
+
+  function compareRating(a, b) {
+    if (a.Rating < b.Rating) return 1;  
+    if (a.Rating > b.Rating) return -1;
+    return 0;
+  }
+
+  function compareDate(a, b) {
+    if (a.PubDate < b.PubDate) return 1;  
+    if (a.PubDate > b.PubDate) return -1;
+    return 0;
+  }
+
+  const persons = computed(() => {
+    if (currentSort.value == 'Rating')
+      return data_ref.value.filter((item) => item.Topic == topic.value).sort(compareRating);
+    return data_ref.value.filter((item) => item.Topic == topic.value).sort(compareDate);
+  });
+
   
- 
-  init()
+  const totalPages = computed(() => Math.ceil(persons.value.length / itemsPerPage.value));
+
+  const paginatedPersons = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    const end = start + itemsPerPage.value;
+    return persons.value.slice(start, end);
+  });
+
   
-  function handleSideMenuToggle(isOpen) {
+  function handleSideMenuToggle() {
     isSideMenuOpen.value = !isSideMenuOpen.value;
+  }
+
+  function handleFilter(filter) {
+    currentSort.value = filter
+  }
+
+  function handleLike(personId) {
+    const person = data_ref.value.find(p => p.id === personId);
+    if (person) {
+      person.Rating++;
+    }
   }
 
   function handleTopic(buttonId) {
     topic.value = dict[buttonId];
-    init()
+    handleSideMenuToggle();
   }
 
 </script>
