@@ -2,6 +2,16 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   plugins: ['~/plugins/pinia.js'],
-  devtools: { enabled: true }
+  devtools: { enabled: true },
+  app: {
+    head: {
+      link: [
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Jersey+25&display=swap'
+        }
+      ]
+    }
+  }
 })
 

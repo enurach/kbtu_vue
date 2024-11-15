@@ -1,11 +1,45 @@
-<script setup lang="ts">
-const route = useRoute()
-</script>
-
+<!-- Main page -->
 <template>
-  <div>
-    <h1>Nuxt Routing set up successfully!</h1>
-    <p>Current route: {{ route.path }}</p>
-    <a href="https://nuxt.com/docs/getting-started/routing" target="_blank">Learn more about Nuxt Routing</a>
+  <div id="main-block">
+      <SearchHeader />
+      <div class="person-grid">
+        <Card 
+          v-for="card in cards" :key="card.id" :id="card.id"
+        />
+      </div>
   </div>
 </template>
+
+
+<script setup>
+  import Card from '~/components/Card.vue';
+  import SearchHeader from '~/components/SearchHeader.vue';
+
+  import { usePostsStore } from '~/stores/cards';
+
+  
+  const route = useRoute();
+  const postStore = usePostsStore();
+
+  const cards = computed(() => postStore.paginatedCards(4));
+
+</script>
+
+<style scoped>
+
+  #main-block {
+    background-color: rgb(255, 255, 255, 0.6);
+    width: 85%;
+    margin: 2% 7.5%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .person-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap:50px;
+    padding: 20px;
+  }
+</style>
