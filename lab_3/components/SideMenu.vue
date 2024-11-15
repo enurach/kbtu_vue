@@ -1,12 +1,12 @@
 <template>
     <div class = "side-menu">
-        <button class="white-box" @click="toggleSideMenu">MENU</button>
+        <button class="white-box" @click="toggleSideMenu"><p>MENU</p></button>
         <div id = "main" class="white-box">
             <ul>
-                <li><button @click="changeTopic(0)">ADVENTURE BLOG</button></li>
-                <li><button @click="changeTopic(1)">NATURE BLOG</button></li>
-                <li><button @click="changeTopic(2)">FASHION BLOG</button></li>
-                <li><button @click="changeTopic(3)">MODERN BLOG</button></li>
+                <li><button @click="changeTopic('Adventure')"><p>ADVENTURE BLOG</p></button></li>
+                <li><button @click="changeTopic('Nature')"><p>NATURE BLOG</p></button></li>
+                <li><button @click="changeTopic('Fashion')"><p>FASHION BLOG</p></button></li>
+                <li><button @click="changeTopic('Modern')"><p>MODERN BLOG</p></button></li>
             </ul>
             <div class="contacts">
                 <h3>CONTACTS</h3>
@@ -20,12 +20,22 @@
 
 <script setup>
   import { useStore } from './stores/index'
+  import { usePostsStore } from '~/stores/cards';
 
   const store = useStore();
+  const cardStore = usePostsStore();
 
   function toggleSideMenu() { 
     store.toggleSideMenu();
   }
+
+  function changeTopic(topic) {
+    cardStore.changeTopic(topic);
+    store.toggleSideMenu();
+    cardStore.resetPage();
+  }
+
+
 </script>
 
 <style scoped>
@@ -60,6 +70,7 @@
   .side-menu ul {
     list-style: none;
     padding: 0;
+    width: 100%;
   }
 
 
@@ -67,10 +78,9 @@
     width: 100%;
     margin-bottom: 10px;
     background-color: #61d452;
-    border-radius: 10px;
     border: 0;
     color: white;
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   
@@ -83,16 +93,23 @@
     border: 0;
     margin: 10%;
     color: white;
+    width: 80%;
+    font-size: 1.5rem;
   }
 
   h3 {
     font-size: 2rem;
     margin: 1rem;
+    font-family: 'Jersey 25';
+    font-weight: 300;
   }
 
+
+
   p {
-    margin: 0.5rem;
-    font-size: 1.5rem;
+    margin: 5px;
+    font-family: 'Jersey 25';
+    font-weight: 300;
   }
 
 </style>

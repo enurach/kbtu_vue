@@ -2,55 +2,44 @@
     <div id="card">
         <div id="raw1">
             <div id="name-date">
-                <p>{{person.name}}</p>
-                <p>{{person.date}}</p>
+                <p>{{user.name}}</p>
+                <p>{{card.PubDate}}</p>
             </div>
             <div id="ratting">
                 <p>Rating</p>
-                <div>
-                    <img class="star" v-for="i in person.rating" src="../assets/star.svg">
-                </div>
+                <Ratting :rating="card.Rating"/>
             </div>
-            <img :src= "imageSrc" />
+            <img :src="`/images/${user.avatar}`" alt="User Avatar" />
         </div>
-        <p class="comment">{{person.comment}}</p>
-        <button id="like" @click="likePerson(person.id)">Like</button>
+        <p class="comment">{{card.Commentary}}</p> 
+        <button id="like" @click="likeCard(card.id)"><p>Like</p></button>
     </div>
 </template>
 
 <script setup>
-    import { ref} from 'vue';
-    const person = defineProps({
+    import Ratting from './Ratting.vue';
+
+    import { usePostsStore } from '~/stores/cards';
+    import { useUserStore } from '~/stores/users';
+
+    import { defineProps, computed } from 'vue';
+
+    const cardStore = usePostsStore()
+    const userStore = useUserStore()
+
+    const cardProps = defineProps({
         id: {
             type: Number,
             required: true
-        },
-        name: {
-            type: String,
-            required: true
-        },
-        date: {
-            type: String,
-            required: true
-        },
-        rating: Number,
-        comment: Text,
-        photo: {
-            type: String,
-            required: true,
-        },
-
+        }
     });
 
-    const emit = defineEmits(['likePerson']);
+    const card = cardStore.getById(cardProps.id);
+    const user = userStore.getById(card.authorId);
 
-    const likePerson = () => {
-        emit('likePerson', person.id);
-    };
-
-
-    const imageSrc = new URL(`../assets/${person.photo}`, import.meta.url).href;
-
+    function likeCard(id) {
+        cardStore.likeCard(id);
+    }
 
 </script>
 
@@ -60,8 +49,6 @@
         background-color: #2ba2d1;
         border-radius: 20px;
         border: 0;
-        margin: 2% 2% 2% 2%;
-    
     }
 
     #raw1 {
@@ -77,32 +64,30 @@
         flex-direction: column;
         justify-content: space-around;
         margin: 10px;
-        width: 40%;
-        height: 100px;
+        min-width: 25%;
+        padding: 10px
     }
 
     #like {
-        position: absolute;
         background-color: greenyellow;
         border: 0;
         border-radius: 20px;
-        right: 10px;
-        bottom: 10px;
         width: 80px;
         height: 25px;
+        margin-left: 85%;
+        margin-bottom: 10px;
         color: white;
     }
 
     p {
         color: white;
-        font-size: 1rem;
+        font-size: 1.5rem;
         margin: 0;
         padding: 0;
     }
 
     img {
-        width: 20%;
-        height: 100%;
+        width: 100px;
     }
 
     #ratting {
@@ -112,13 +97,8 @@
         justify-content: space-around;
         height: 100px;
     }
-
-    .star {
-        width: 20px;
-    }
     
     .comment {
-        margin: 0 0 0 20px;
+        margin: 10px 20px;
     }
-
 </style>

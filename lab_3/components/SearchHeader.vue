@@ -6,65 +6,54 @@
                     <p>13.09.2024</p>
                 </div>
                 <div class="blue-box" id="title">
-                    <p><strong>{{props.title}}</strong></p>
+                    <p><strong>{{cardStore.currentTitle}}</strong></p>
                 </div>
             </div>
         </div>
         <div class="bottom">
-            <div @click="toggleClass" id="filter">
+            <div @click="store.toggleSearchMenueDropdown" id="filter">
                 <div><img src="@/assets/filter.svg" /></div>
-                <div class="rating">{{currentSort}}</div>
+                <div class="rating">{{cardStore.currentSorting}}</div>
                 <div><img src="@/assets/triangle.svg" /></div>
-                <div v-show="isDropdown"class="dropdown">
+                <div v-show="store.searchMenueDropdownIsOpen"class="dropdown">
                     <div @click="triggerSort('Rating')" class="fil">Rating</div>
                     <div @click="triggerSort('Date')" class="fil">Date</div>
                 </div>
             </div>
         </div>
         <div class="bottom">
-            <div id="arrow" v-if="currentPage < totalPages">
-                <button @click="nextPage"><img src="@/assets/Arrow.svg"/></button>
+            <div id="arrow" v-if="cardStore.currentPage < cardStore.totalPages(4)">
+                <button @click="nextPage()"><img src="@/assets/Arrow.svg"/></button>
             </div>
-            <div id="back-arrow" v-if="currentPage != 1">
-                <button @click="prevPage"><img src="@/assets/Arrow.svg"/></button>
+            <div id="back-arrow" v-if="cardStore.currentPage > 1">
+                <button @click="prevPage()"><img src="@/assets/Arrow.svg"/></button>
             </div>
-            <div class="pagin">{{ currentPage }}/{{ totalPages }}</div>
+            <div class="pagin">{{ cardStore.currentPage }}/{{ cardStore.totalPages(numberOfCards) }}</div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { usePostsStore } from '~/stores/cards';
+    import { useStore } from '~/stores';
 
-    const props = defineProps({
-        title: String,
-        totalPages: Number,
-        currentPage: Number
-    }); 
+    const cardStore = usePostsStore();
+    const store = useStore();
+    
+    const numberOfCards = 4;
 
-    const emit = defineEmits(['nextPage', 'prevPage', 'changeFilter']);
-
-    const isDropdown = ref(false)
-
-    const nextPage = () => {
-        emit('nextPage')
-
-    };
-
-    const prevPage = () => {
-        emit('prevPage')
-    };
-
-    const toggleClass = () => {
-        isDropdown.value = !isDropdown.value
+    function triggerSort(sortValue) {
+        cardStore.changeSorting(sortValue);
     }
 
-    const triggerSort = (value) => {
-        currentSort.value = value
-        emit('changeFilter', currentSort.value)
+    function nextPage() {
+        cardStore.nextPage(numberOfCards);
     }
 
-    const currentSort = ref('Rating')
+    function prevPage() {
+        cardStore.prevPage();
+    }
+
 </script> 
 
 
@@ -117,7 +106,10 @@
     }
     
     #title {
-        width: 300px;
+        width: 400px;
+        font-size: 3rem;
+        display: flex;
+        justify-content: center;
     }
 
     .dropdown {
@@ -151,8 +143,6 @@
         right: 50px;
         width: 10rem;
     }
-
-
 
     .rating {
         color: rgba(29, 227, 144, 1);
