@@ -2,7 +2,8 @@
   <div class="app-background">
     <Header />
     <SideMenu v-if="store.isSideMenuOpen"/>
-    <NuxtPage />
+    <LoginPanel v-if="store.isLoginPanel"/>
+    <NuxtPage :page-key="route => route.fullPath"/>
   </div>
 </template>
 
