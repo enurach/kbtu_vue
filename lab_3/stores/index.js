@@ -5,6 +5,8 @@ export const useStore = defineStore('menu', {
     sideMenuIsOpen: false,
     searchMenueDropdownIsOpen: false,
     loginDropdownIsOpen: false,
+    isCodeSent: false,
+    isLoginPanel: false
   }),
 
   actions: {
@@ -32,6 +34,15 @@ export const useStore = defineStore('menu', {
       const nextState = !this.loginDropdownIsOpen;
       this.closeAll();
       this.loginDropdownIsOpen = nextState;
+    },
+
+
+    toggleLoginPanel() {
+      this.isLoginPanel = !this.isLoginPanel;
+    },
+
+    toggleCodeSend() {
+      this.isCodeSent = !this.isCodeSent;
     },
   },
 

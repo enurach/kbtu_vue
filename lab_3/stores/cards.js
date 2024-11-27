@@ -11,8 +11,23 @@ export const usePostsStore = defineStore('CardsStore', {
   }),
   getters: {
     // Get card by id
-    getById: (state) => {
-      return (id) => state.cards.find(card => card.id === id);
+    getById: (state) => (id) => {
+      return state.cards.find(card => card.id === id);
+    },
+    
+    // Get card by author id
+    getAuthorCards: (state) => (id) => {
+      return state.cards.filter(card => card.authorId === id);
+    },
+
+    // Get average ratting
+    getAuthorAverageRating: (state) => {
+      return (id) => {
+        const authorCards = state.cards.filter(card => card.authorId === id);
+        if (authorCards.length === 0) return 0;
+        const totalRating = authorCards.reduce((sum, card) => sum + (card.Rating || 0), 0);
+        return totalRating / authorCards.length;
+      };
     },
 
     // ByTitle
@@ -35,6 +50,14 @@ export const usePostsStore = defineStore('CardsStore', {
       const end = start + pageSize;
       return state.sortedCards.slice(start, end);
     },
+
+    paginatedAuthorCards: (state) => (pageSize, id, currentPage) => {
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      return state.getAuthorCards(id).slice(start, end);
+    },
+    
+
      
     getCurrentPage: (state) => {
       return state.currentPage;
@@ -46,14 +69,26 @@ export const usePostsStore = defineStore('CardsStore', {
 
   actions: {
     // Pressing Like logic
-    likeCard(id) {
-        const card = this.cards.find(card => card.id === id);
-        if (card) {
-            if (card.Rating < 5.0)
-                card.Rating += 0.1;
-        }
-    },
+    likeCard(id, userId) {
+      const cardIndex = this.cards.findIndex(card => card.id === id);
 
+      if (cardIndex !== -1) {
+          const card = this.cards[cardIndex];
+
+          if (!card.Liked.includes(userId)) {
+              card.Liked.push(userId);
+              if (card.Rating < 5.0) {
+                  card.Rating = parseFloat((card.Rating + 0.1).toFixed(1));
+              }
+              this.cards.splice(cardIndex, 1, { ...card });
+          }
+      }
+  },
+
+
+    deleteCard(id) {
+      this.cards = this.cards.filter(card => card.id !== id);
+    },
     // ChangeTopic
     changeTopic(topic) {
       this.currentTitle = topic;
