@@ -18,7 +18,6 @@
   import { usePostsStore } from '~/stores/cards';
 
   
-  const route = useRoute();
   const postStore = usePostsStore();
 
   const cards = computed(() => postStore.paginatedCards(4));

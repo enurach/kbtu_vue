@@ -1,31 +1,8 @@
 <template>
     <div class="back">
         <div class="wraper">
-            <p class="big">Profile</p>
-            <div class="profile-info">
-                <img :src="`/images/${avatar}`"/>
-                <div calss="main-info">
-                    <p class="name">{{ name }}</p>
-                    <p class="age"> Age: {{ age }}</p>
-                    <p class="place">{{ place }}</p>
-                    <p class="activity"> Activity: was 5 minute ago </p>
-                    <div class="rating">
-                        <p class="ratting-text">Current ratings:</p>
-                        <Ratting :rating="cardStore.getAuthorAverageRating(id)"/>
-                    </div>
-                </div>
-                <div class="control">
-                    <button @click="follow(id)" class="follow">Follow</button>
-                    <button class="chat-now">Chat Now</button>
-                    <button @click="router.push(`/friends/${id}`)" class="friends">Friends</button>
-                </div>
-            </div>
-            <button class="left-text">Latest posts</button>
-            <div class="latest-posts">
-                <Card 
-                    v-for="card in cards" :key="card.id" :id="card.id"
-                />
-            </div>
+            <p class="big">My Friends</p>
+            <FriendCard v-for="user in favorites" :key=user.id :id="user.id"></FriendCard>
             <div>
                 <div class="aligh-rigt">
                     <button @click="prevPage"><img class="left-arrow" src="assets/triangle.svg" /></button>
@@ -41,74 +18,24 @@
 
 <script setup>
 
-    import Ratting from '~/components/Ratting.vue';
+    import FriendCard from '~/components/FriendCard.vue';
     import { useUserStore } from '~/stores/users';
-    import { usePostsStore } from '~/stores/cards';
-    import { useRouter, useRoute } from 'vue-router';
 
-    const router = useRouter();
-    const route = useRoute()
-    const id = Number(route.params.id); 
 
 
     const userStore = useUserStore(); 
-    const cardStore = usePostsStore();
 
-    const user_photo = ref('avatar.svg');
 
     const current_page = ref(1);
-    const total_pages = ref(1);
+    
 
-
-    const user_id = computed(() => {
-        if (userStore.loggedInUser)
-            return userStore.loggedInUser.id;
-        return 0;
+    const favorites = computed(() => {
+        return userStore.paginatedFavorites(4, -1, current_page.value);
     });
 
-    if(id == user_id.value) {
-        router.push('/my-profile');
-    }
-
-    const profile = userStore.getById(id);
-
-
-    const avatar = computed(() => {
-        if (profile) {
-            return profile.avatar;
-        }
-        return user_photo.value;
+    const total_pages = computed(()=> {
+        return Math.ceil(userStore.getFavorites(-1).length / 4);
     });
-
-    const name = computed(() => {
-        if (profile) {
-            return profile.name;
-            }
-        return user_photo.value;
-    });
-    const age = computed(() => {
-        if (profile) {
-            return profile.age;
-            }
-        return user_photo.value;
-    });
-    const place = computed(() => {
-        if (profile) {
-            return profile.place;
-            }
-        return user_photo.value;
-    });
-
-
-    const cards = computed(() => {
-        return cardStore.paginatedAuthorCards(2, id, current_page.value);
-    });
-
-    total_pages.value = Math.ceil(cardStore.getAuthorCards(id).length / 2);
-
-    function follow(id) {
-        userStore.addToFavorite(id);
-    }
 
     function nextPage() {
         if (current_page.value < total_pages.value)

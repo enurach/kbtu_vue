@@ -1,31 +1,8 @@
 <template>
     <div class="back">
         <div class="wraper">
-            <p class="big">My Profile</p>
-            <div class="profile-info">
-                <img :src="`/images/${avatar}`"/>
-                <div calss="main-info">
-                    <p class="name">{{ name }}</p>
-                    <p class="age"> Age: <input type='number'v-model="editedAge"></input></p>
-                    <p class="place"> <input v-model="editedPlace"></input></p>
-                    <p class="activity"> Activity: for now </p>
-                    <div class="rating">
-                        <p class="ratting-text">Current ratings:</p>
-                        <Ratting :rating="cardStore.getAuthorAverageRating(user_id)"/>
-                    </div>
-                </div>
-                <div class="control">
-                    <button>Statistic</button>
-                    <button @click="saveEdited()">Save</button>
-                    <button @click="router.push('/my-friends')">Friends</button>
-                </div>
-            </div>
-            <button class="left-text">Latest posts</button>
-            <div class="latest-posts">
-                <Card 
-                    v-for="card in cards" :key="card.id" :id="card.id" :usage="1"
-                />
-            </div>
+            <p class="big">Friends</p>
+            <FriendCard v-for="user in favorites" :key=user.id :id="user.id"></FriendCard>
             <div>
                 <div class="aligh-rigt">
                     <button @click="prevPage"><img class="left-arrow" src="assets/triangle.svg" /></button>
@@ -41,70 +18,38 @@
 
 <script setup>
 
-    import Ratting from '~/components/Ratting.vue';
+    import FriendCard from '~/components/FriendCard.vue';
     import { useUserStore } from '~/stores/users';
-    import { usePostsStore } from '~/stores/cards';
-    import { useRouter } from 'vue-router';
-
-    definePageMeta({
-        middleware: 'auth',
-    });
-
-
-    const userStore = useUserStore(); 
-    const cardStore = usePostsStore();
-
-    const user_photo = ref('avatar.svg');
-
-    const current_page = ref(1);
-    const total_pages = ref(1);
+    import { useRouter, useRoute } from 'vue-router';
 
     const router = useRouter();
+    const route = useRoute()
+    const id = Number(route.params.id); 
 
+    const userStore = useUserStore(); 
+
+
+    const current_page = ref(1);
+    
 
     const user_id = computed(() => {
         if (userStore.loggedInUser)
             return userStore.loggedInUser.id;
-        return 1;
-    });
-
-    const avatar = computed(() => {
-        if (userStore.loggedInUser) {
-            return userStore.loggedInUser.avatar;
-            }
-        return user_photo.value;
-    });
-
-    const name = computed(() => {
-        if (userStore.loggedInUser) {
-            return userStore.loggedInUser.name;
-            }
-        return user_photo.value;
-    });
-
-    const age = computed(() => {
-        if (userStore.loggedInUser) {
-            return userStore.loggedInUser.age;
-            }
         return 0;
     });
 
-    const place = computed(() => {
-        if (userStore.loggedInUser) {
-            return userStore.loggedInUser.place;
-            }
-        return user_photo.value;
+    if(id == user_id.value) {
+        router.push('/my-friends');
+    }
+
+
+    const favorites = computed(() => {
+        return userStore.paginatedFavorites(4, id, current_page.value);
     });
 
-
-    const editedAge = ref(age.value);
-    const editedPlace = ref(place.value)
-
-    const cards = computed(() => {
-        return cardStore.paginatedAuthorCards(2, user_id.value, current_page.value);
+    const total_pages = computed(()=> {
+        return Math.ceil(userStore.getFavorites(id).length / 4);
     });
-
-    total_pages.value = Math.ceil(cardStore.getAuthorCards(user_id.value).length / 2);
 
     function nextPage() {
         if (current_page.value < total_pages.value)
@@ -116,23 +61,11 @@
             current_page.value -= 1;
     }
 
-    function saveEdited() {
-        const userObj = {
-            id: userStore.loggedInUser.id,
-            age: editedAge.value,
-            place: editedPlace.value,
-        }
-        console.log(userObj)
-        userStore.updateUser(userObj);
-    }
-
 </script>
 
 
 <style>
-    button {
-        cursor: pointer;
-    }
+
     @font-face {
         font-family: 'MyCustomFont';
         src: url('assets/fonts/NordinSlabOutline-nRp9M.otf') format('opentype');
@@ -177,15 +110,15 @@
     }
 
     .age,
-    .place {
+    .place{
         margin: 5px 0;
         font-size: 1.5em;
         color: yellow;
     }
 
     .activity {
+        color: red;
         font-size: 1em;
-        color: rgb(150, 250, 0);
     }
 
     .rating {
@@ -205,13 +138,13 @@
     .control button {
         font-family: 'MyCustomFont';
         font-size: 2.5em;
-        background-color: white;
         width: 100%;
         min-width: 200px;
         margin: 10px;
     }
 
     .big {
+        padding-right: 100px;
         text-align: right;
         color: white;
         font-size: 5em;
@@ -253,13 +186,13 @@
         transform: rotate(-90deg);
     }
 
-    input {
-        background-color: #adebff;
-        font-family: Inknut Antiqua;
-        font-weight: 900;
-        text-align: left;
-        text-underline-position: from-font;
-        text-decoration-skip-ink: none;
-
+    .follow {
+        background-color: greenyellow;
+    }
+    .friends {
+        background-color: #83cce4;
+    }
+    .chat-now {
+        background-color: white;
     }
 </style>
