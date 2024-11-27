@@ -1,10 +1,12 @@
 <template>
     <div id="card">
         <div id="raw1">
-            <div id="name-date">
-                <p>{{user.name}}</p>
-                <p>{{card.PubDate}}</p>
-            </div>
+            <NuxtLink :to="`/profile/${card.id}`" style="text-decoration: none; color: inherit;">
+                <div id="name-date">
+                    <p>{{user.name}}</p>
+                    <p>{{card.PubDate}}</p>
+                </div>
+            </NuxtLink>
             <div id="ratting">
                 <p>Rating</p>
                 <Ratting :rating="card.Rating"/>
@@ -12,7 +14,9 @@
             <img :src="`/images/${user.avatar}`" alt="User Avatar" />
         </div>
         <p class="comment">{{card.Commentary}}</p> 
-        <button id="like" @click="likeCard(card.id)"><p>Like</p></button>
+        
+        <button v-if="usage===1"  id="delete" @click="deleteCard(card.id)"><p>Delete</p></button>
+        <button v-if="usage===0"  id="like" @click="likeCard(card.id)"><p>Like</p></button>
     </div>
 </template>
 
@@ -22,7 +26,8 @@
     import { usePostsStore } from '~/stores/cards';
     import { useUserStore } from '~/stores/users';
 
-    import { defineProps, computed } from 'vue';
+    import { defineProps } from 'vue';
+
 
     const cardStore = usePostsStore()
     const userStore = useUserStore()
@@ -31,14 +36,24 @@
         id: {
             type: Number,
             required: true
+        },
+        usage: {
+            default: 0,
+            type: Number,
+            required: false
         }
     });
 
     const card = cardStore.getById(cardProps.id);
     const user = userStore.getById(card.authorId);
 
-    function likeCard(id) {
-        cardStore.likeCard(id);
+    function likeCard(id) { 
+        if(userStore.isLoggedIn)
+            cardStore.likeCard(id, userStore.loggedInUser.id);
+    }
+
+    function deleteCard(id) {
+        cardStore.deleteCard(id);
     }
 
 </script>
@@ -46,6 +61,8 @@
 <style scoped>
     #card {
         position: relative;
+        padding: 10px 20px;
+        width: 550px;/*  MEGA KOSTIL */
         background-color: #2ba2d1;
         border-radius: 20px;
         border: 0;
@@ -70,6 +87,16 @@
 
     #like {
         background-color: greenyellow;
+        border: 0;
+        border-radius: 20px;
+        width: 80px;
+        height: 25px;
+        margin-left: 85%;
+        margin-bottom: 10px;
+        color: white;
+    }
+    #delete{
+        background-color: red;
         border: 0;
         border-radius: 20px;
         width: 80px;

@@ -4,41 +4,57 @@
         <img src='../assets/menu.svg' />
       </button>
       <div id = 'header-text'>
-            <p>New trips on Fall season! Full details on our Instagram account</p>
+            <p><NuxtLink to="/" style="text-decoration: none; color: inherit;">New trips on Fall season! Full details on our Instagram account</NuxtLink></p>
       </div>
       <button id="profile" @click="store.toggleLoginDropdown()">
-        <img src="../assets/avatar.svg"/>
+        <img :src="`/images/${avatar}`"/>
       </button>
     </header>
     <div v-show="store.loginDropdownIsOpen"class="dropdown">
-        <div @click="navigateTo('login')" class="fil">LOGIN</div>
-        <div @click="navigateTo('register')" class="fil">REGISTER</div>
+      <div @click="store.toggleLoginPanel() && !userStore.isLoggedIn" class="fil">LOGIN</div>
+      <div class="fil"><NuxtLink to="/register" style="text-decoration: none; color: inherit;">REGISTER</NuxtLink></div>
+    </div>
+    <div v-show="store.loginDropdownIsOpen && userStore.isLoggedIn"class="dropdown">
+        <div class="fil"><NuxtLink to="/my-profile" style="text-decoration: none; color: inherit;">MY PROFILE</NuxtLink></div>
+        <div class="fil"><NuxtLink to="/my-friends" style="text-decoration: none; color: inherit;">FAVORITES</NuxtLink></div>
+        <div class="fil" @click="logOut()">LOG OUT</div>
       </div>
 </template>
   
 <script setup>
   import { useStore } from './stores/index'
+  import { useUserStore } from '~/stores/users';
+  import { useRouter } from 'vue-router'; // `useRouter` for navigation
+
 
   const store = useStore();
+  const userStore = useUserStore();
 
-  const route = useRoute(); 
+  const user_photo = ref('avatar.svg'); 
+  const router = useRouter();
 
   function toggleSideMenu() { 
     store.toggleSideMenu();
   }
 
-  function navigateTo(page) {
-    if (page === 'login') {
-      route.push('/login');
-    } else if (page === 'register') {
-      route.push('/register');
-    }
+  function logOut() {
+    store.toggleLoginDropdown();
+    router.push('/');
+    userStore.logout();
   }
+
+  const avatar = computed(() => {
+    if (userStore.loggedInUser) {
+      return userStore.loggedInUser.avatar;
+    }
+    return user_photo.value;
+  });
 
 </script>
   
 <style scoped>
   header {
+      position: relative;
       height: 5rem;
       background-color: rgb(255, 255, 255, 0.6);
       display: flex;
@@ -46,6 +62,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 0 10px;
+      z-index: 100;
   }
 
   #profile {

@@ -21,9 +21,12 @@
 <script setup>
   import { useStore } from './stores/index'
   import { usePostsStore } from '~/stores/cards';
+  import { useRouter } from 'vue-router';
 
   const store = useStore();
   const cardStore = usePostsStore();
+
+  const router = useRouter()
 
   function toggleSideMenu() { 
     store.toggleSideMenu();
@@ -33,6 +36,7 @@
     cardStore.changeTopic(topic);
     store.toggleSideMenu();
     cardStore.resetPage();
+    router.push('/');
   }
 
 
