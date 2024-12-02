@@ -2,7 +2,7 @@
     <div class="back">
         <div class="wraper">
             <p class="big">Friends</p>
-            <FriendCard v-for="user in favorites" :key=user.id :id="user.id"></FriendCard>
+            <FriendCard v-for="user in favorites" :key=user.id :id="user.id" :usage="1"></FriendCard>
             <div>
                 <div class="aligh-rigt">
                     <button @click="prevPage"><img class="left-arrow" src="assets/triangle.svg" /></button>

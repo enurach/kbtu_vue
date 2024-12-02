@@ -16,7 +16,7 @@
                 </div>
                 <div class="control">
                     <button @click="follow(id)" class="follow">Follow</button>
-                    <button class="chat-now">Chat Now</button>
+                    <button @click="router.push(`/chat/${id}`)" class="chat-now">Chat Now</button>
                     <button @click="router.push(`/friends/${id}`)" class="friends">Friends</button>
                 </div>
             </div>

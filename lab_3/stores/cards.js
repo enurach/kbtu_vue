@@ -56,7 +56,33 @@ export const usePostsStore = defineStore('CardsStore', {
       const end = start + pageSize;
       return state.getAuthorCards(id).slice(start, end);
     },
+
+    getStatistic: (state) =>(id, range) => {
+
+      const filteredAndSorted = [...state.getAuthorCards(id)]
+      .filter((card) => {
+        const cardDate = new Date(card.PubDate);
+        return cardDate >= range.start && cardDate <= range.end; //May be need fix
+      })
+      .sort((a, b) => new Date(a.PubDate)-new Date(b.PubDate));
+
+      const groupedByDate = filteredAndSorted.reduce((acc, card) => {
+        const date = new Date(card.PubDate).toLocaleDateString();
+        if (!acc[date]) {
+          acc[date] = 0;
+        }
+        acc[date]++;
+        return acc;
+      }, {});
+
+      const labels = Object.keys(groupedByDate); 
+      const numbers = Object.values(groupedByDate);
     
+      return {
+        labels,
+        numbers,
+      };
+    },
 
      
     getCurrentPage: (state) => {

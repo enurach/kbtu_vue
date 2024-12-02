@@ -10,13 +10,13 @@
         <img :src="`/images/${avatar}`"/>
       </button>
     </header>
-    <div v-show="store.loginDropdownIsOpen"class="dropdown">
-      <div @click="store.toggleLoginPanel() && !userStore.isLoggedIn" class="fil">LOGIN</div>
-      <div class="fil"><NuxtLink to="/register" style="text-decoration: none; color: inherit;">REGISTER</NuxtLink></div>
+    <div v-show="store.loginDropdownIsOpen && !userStore.isLoggedIn"class="dropdown">
+      <div @click="login" class="fil">LOGIN</div>
+      <div class="fil"><NuxtLink to="/register" @click="handleClick" style="text-decoration: none; color: inherit;">REGISTER</NuxtLink></div>
     </div>
     <div v-show="store.loginDropdownIsOpen && userStore.isLoggedIn"class="dropdown">
-        <div class="fil"><NuxtLink to="/my-profile" style="text-decoration: none; color: inherit;">MY PROFILE</NuxtLink></div>
-        <div class="fil"><NuxtLink to="/my-friends" style="text-decoration: none; color: inherit;">FAVORITES</NuxtLink></div>
+        <div class="fil"><NuxtLink to="/my-profile" @click="handleClick" style="text-decoration: none; color: inherit;">MY PROFILE</NuxtLink></div>
+        <div class="fil"><NuxtLink to="/my-friends" @click="handleClick" style="text-decoration: none; color: inherit;">FAVORITES</NuxtLink></div>
         <div class="fil" @click="logOut()">LOG OUT</div>
       </div>
 </template>
@@ -36,6 +36,16 @@
   function toggleSideMenu() { 
     store.toggleSideMenu();
   }
+
+  function handleClick() {
+    store.toggleLoginDropdown();
+  }
+
+  function login() {
+    store.toggleLoginPanel(); 
+    store.toggleLoginDropdown();
+  }
+
 
   function logOut() {
     store.toggleLoginDropdown();

@@ -4,7 +4,7 @@
             <p class="big">My Friends</p>
             <FriendCard v-for="user in favorites" :key=user.id :id="user.id"></FriendCard>
             <div>
-                <div class="aligh-rigt">
+                <div v-if="total_pages!==0" class="aligh-rigt">
                     <button @click="prevPage"><img class="left-arrow" src="assets/triangle.svg" /></button>
                     <p> {{ current_page }}/{{ total_pages }} </p>
                     <button @click="nextPage"><img class="right-arrow" src="assets/triangle.svg" /></button>
@@ -50,7 +50,7 @@
 </script>
 
 
-<style>
+<style scoped>
 
     @font-face {
         font-family: 'MyCustomFont';

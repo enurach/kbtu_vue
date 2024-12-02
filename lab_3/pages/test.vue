@@ -1,14 +1,9 @@
 <template>
-    <h1>Hello test</h1>
-</template>
+    <BarChart />
+  </template>
+  
+  <script setup>
+  import BarChart from '~/components/BarChart.vue';
+  
 
-<script setup>
-
-    const route = useRoute();
-
-
-</script>
-
-<style scoped>
-
-</style>
+  </script>

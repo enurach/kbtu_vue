@@ -35,10 +35,12 @@
     import {ref} from 'vue'
     import {useUserStore} from "/stores/users.js"
     import {useStore} from "/stores/index.js"
+    import { useRouter } from 'vue-router';
 
     const userStore = useUserStore()
     const store = useStore()
 
+    const router = useRouter();
 
     const email = ref('');
     const password = ref('');
@@ -47,6 +49,7 @@
         const user = userStore.login({email: email.value, password: password.value})
         if (user){
             store.toggleLoginPanel();
+            router.push('/');
         }
     }
 

@@ -8,9 +8,12 @@
             </div>
         </NuxtLink>
         
-        <button id="delete" @click="deleteCard(card.id)"><p>UNFOLLOW</p></button>
-        <button id="rename" @click="likeCard(card.id)"><p>RENAME</p></button>
-        <button id="chat" @click="likeCard(card.id)"><p>CHAT</p></button>
+        <button v-if="cardProps.usage===0" id="delete" @click="deleteCard(card.id)"><p>UNFOLLOW</p></button>
+        <button v-if="cardProps.usage===0" id="rename" ><p>RENAME</p></button>
+        <button v-if="cardProps.usage===0" id="chat" @click="likeCard(card.id)"><p>CHAT</p></button>
+
+        <button v-if="cardProps.usage===1" id="chat" @click="follow(card.id)" ><p>FOLLOW</p></button>
+
     </div>
 </template>
 
@@ -29,6 +32,10 @@
         id: {
             type: Number,
             required: true
+        },
+        usage: {
+            type: Number,
+            default: 0,
         }
     });
 
@@ -41,9 +48,12 @@
 
     function deleteCard(id) {
         userStore.unfollow(id);
-        console.log(id)
     }
 
+
+    function follow(id) {
+        userStore.addToFavorite(id);
+    }
 </script>
 
 <style scoped>

@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div class="control">
-                    <button>Statistic</button>
+                    <button @click="router.push('/my-statistics')" >Statistic</button>
                     <button @click="saveEdited()">Save</button>
                     <button @click="router.push('/my-friends')">Friends</button>
                 </div>
@@ -27,7 +27,7 @@
                 />
             </div>
             <div>
-                <div class="aligh-rigt">
+                <div v-if="total_pages!==0" class="aligh-rigt">
                     <button @click="prevPage"><img class="left-arrow" src="assets/triangle.svg" /></button>
                     <p> {{ current_page }}/{{ total_pages }} </p>
                     <button @click="nextPage"><img class="right-arrow" src="assets/triangle.svg" /></button>
@@ -57,7 +57,7 @@
     const user_photo = ref('avatar.svg');
 
     const current_page = ref(1);
-    const total_pages = ref(1);
+    const total_pages = ref(0);
 
     const router = useRouter();
 
