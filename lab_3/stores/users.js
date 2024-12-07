@@ -96,6 +96,14 @@ export const useUserStore = defineStore('UserStore', {
             }
           }
         },
+        updateUserName(updatedUser) {
+          for(let i = 0; i < this.usersData.length; i++) {
+            if(this.usersData[i].id === updatedUser.id) {
+              this.usersData[i].name = updatedUser.name;
+              break;
+            }
+          }
+        },
         addToFavorite(id) {
           if(this.isLoggedIn) {
             const userIndex = this.usersData.findIndex(user => user.id === this.loggedInUser.id);
